@@ -27,6 +27,9 @@ Resources:
     Properties:
       Handler: myTestingFunction.handler
       CodeUri: .
+      Policies:
+        - CodePipelineLambdaExecutionPolicy: {}
+      
 
 Outputs:
   Region:

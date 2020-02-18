@@ -1,16 +1,26 @@
 'use strict';
 
+var AWS = require('aws-sdk');
+var codepipeline = new AWS.CodePipeline();
+
+
+// https://docs.aws.amazon.com/codepipeline/latest/userguide/actions-invoke-lambda-function.html
 exports.handler = async (event, context)  => {
 	console.log('Hello my testing function')
-	
-	return sendResponse(200, "Tests successful, yey", context);
-};
+	// Retrieve the Job ID from the Lambda action
+	var jobId = event["CodePipeline.job"].id;
+	console.log(jobId);
 
-function sendResponse(statusCode, message, context) {
-	const message1 = JSON.stringify(message) 
-	const response = {
-		statusCode: statusCode,
-		body: `The version of your function is: ${context.functionVersion}. \n ${message1}`
+	var params = {
+		jobId: jobId
 	};
-	return response
-}
+
+	return codepipeline.putJobSuccessResult(params).promise(data => {
+		console.log('sent?')
+		console.log(data);
+		context.succeed('yey!');      
+	}).catch(error => {
+		console.log(error);
+		context.fail(error);
+	});
+};

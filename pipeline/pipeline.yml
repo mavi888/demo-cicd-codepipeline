@@ -158,7 +158,7 @@ Resources:
                         RoleArn: !GetAtt CloudFormationExecutionRole.Arn
                         StackName: demo-cicd-codepipeline-Stage
                         ChangeSetName: demo-cicd-codepipeline-ChangeSet-Stage
-                        TemplatePath: BuildArtifactAsZip::packaged.yaml
+                        TemplatePath: BuildArtifactAsZip::packaged.yml
                         Capabilities: CAPABILITY_IAM
                       InputArtifacts:
                         - Name: BuildArtifactAsZip
@@ -209,7 +209,7 @@ Resources:
                         RoleArn: !GetAtt CloudFormationExecutionRole.Arn
                         StackName: demo-cicd-codepipeline-Prod
                         ChangeSetName: demo-cicd-codepipeline-ChangeSet-Prod
-                        TemplatePath: BuildArtifactAsZip::packaged.yaml
+                        TemplatePath: BuildArtifactAsZip::packaged.yml
                         Capabilities: CAPABILITY_IAM
                       InputArtifacts:
                         - Name: BuildArtifactAsZip
