@@ -18,18 +18,18 @@ Parameters:
     GithubRepo:
       Description: Gitub Repository name
       Type: AWS::SSM::Parameter::Value<String>
-      Default: /service/demo-cicd-codepipeline/github/repo
+      Default: /service/demo-cicd-pipeline/github/repo
 
     GithubToken:
       Description: Github OAuth Token with full permissions on admin:repo_hook and repo
       Type: AWS::SSM::Parameter::Value<String>
       NoEcho: true
-      Default: /service/demo-cicd-codepipeline/github/token
+      Default: /service/demo-cicd-pipeline/github/token
 
     GithubUser:
       Description: Github user where the repository lives
       Type: AWS::SSM::Parameter::Value<String>
-      Default: /service/demo-cicd-codepipeline/github/user
+      Default: /service/demo-cicd-pipeline/github/user
 
 
 Resources:
@@ -185,7 +185,6 @@ Resources:
                         Version: "1"
                       Configuration:
                         FunctionName: testingApp-MyTestingFunction-3UH80R91MAYE 
-                        UserParameters:
                       OutputArtifacts: []
                       InputArtifacts: []
                       Region: us-east-1

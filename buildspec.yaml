@@ -25,7 +25,7 @@ phases:
       - node -v
       - npm -v
       - pip install --upgrade awscli aws-sam-cli
-      - cd functions
+      - cd simpleApp
       - npm install
       - cd ..
   pre_build:
@@ -33,7 +33,7 @@ phases:
       # Use Pre-Build phase to run tests, install any code deps or any other customization before build
       # - echo "[Pre-Build phase]"
       - echo "Starting to run unit tests"
-      - cd functions
+      - cd simpleApp
       - npm test
       - cd ..
   build:
@@ -43,7 +43,7 @@ phases:
       # We package the SAM template and create `packaged.yaml` file that will be used in our pipeline for deployment
       ## Here we separate Build from Deployment and segregate permissions for different steps
       - echo "Starting SAM packaging `date` in `pwd`"
-      - cd functions
+      - cd simpleApp
       - sam build 
       - sam package --s3-bucket $BUILD_OUTPUT_BUCKET --template-file template.yml --output-template-file packaged.yml
   post_build:
