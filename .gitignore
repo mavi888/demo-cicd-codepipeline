@@ -1,0 +1,6 @@
+simpleApp/.aws-sam/
+simpleApp/node_modules/
+.vscode/
+simpleApp/.aws-sam/build/
+simpleApp/samconfig.toml
+testingApp/samconfig.toml

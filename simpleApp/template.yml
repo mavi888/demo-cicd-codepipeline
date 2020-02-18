@@ -1,0 +1,127 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+
+# Parameters definitions
+Parameters: 
+  MyEnvironment: 
+    Type: String
+    Default: dev
+    AllowedValues: 
+      - dev
+      - staging
+      - prod
+    Description: Environment of this stack of resources
+
+Mappings:
+  ResourcesName:
+    dev:
+      tableName: MyDynamoDBTable-dev
+    staging:
+      tableName: MyDynamoDBTable-staging
+    prod:
+      tableName: MyDynamoDBTable-prod
+
+# Global information for all the functions
+Globals:
+  Function:
+    Runtime: nodejs12.x
+    MemorySize: 256
+    Timeout: 100
+    Tracing: Active
+
+Resources:
+
+  # Basic definitions for my API Gateway
+  MyApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref MyEnvironment
+      TracingEnabled: true
+
+  # A function with the most commont attributes
+  MySimpleFunction: 
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: mySimpleFunction.handler
+      Description: Here you can write something
+      Runtime: nodejs12.x
+      CodeUri: ./functions
+      Tracing: Active 
+      MemorySize: 1024
+      Timeout: 15
+      Events:
+        MySimpleFunctionAPI:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MyApi
+            Path: /simple
+            Method: GET
+
+  # A function that uses a Simple table function
+  MySimpleTableFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: mySimpleTableFunction.handler
+      CodeUri: ./functions
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref MySimpleTable
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref MySimpleTable    
+      Events:
+        MySimpleFunctionAPI:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MyApi
+            Path: /simpletable
+            Method: GET
+  
+  MySimpleTable:
+    Type: AWS::Serverless::SimpleTable
+
+  # A function that uses a normal DynamoDB table
+  MySimpleDBFunction:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: mySimpleDBFunction.handler
+      CodeUri: ./functions
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref MyDynamoDBTable
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref MyDynamoDBTable    
+      Events:
+        MySimpleFunctionAPI:
+          Type: Api
+          Properties:
+            RestApiId: !Ref MyApi
+            Path: /simpledb
+            Method: GET
+  
+  MyDynamoDBTable:
+      Type: "AWS::DynamoDB::Table"
+      Properties:
+        AttributeDefinitions:
+        - AttributeName: "itemId"
+          AttributeType: "S"
+        KeySchema:
+        - AttributeName: "itemId"
+          KeyType: "HASH"
+        BillingMode: PAY_PER_REQUEST
+        TableName: !FindInMap [ResourcesName, !Ref MyEnvironment, tableName]      
+
+
+Outputs:
+  Region:
+    Description: "Region"
+    Value: !Ref AWS::Region
+
+  ApiId:
+    Description: "API ID"
+    Value: !Ref MyApi
+
+  ApiUrl:
+    Description: "API endpoint URL for Prod environment"
+    Value: !Sub 'https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/dev/'

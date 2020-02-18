@@ -1,0 +1,38 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+
+# Parameters definitions
+Parameters: 
+  MyEnvironment: 
+    Type: String
+    Default: dev
+    AllowedValues: 
+      - dev
+      - staging
+      - prod
+    Description: Environment of this stack of resources
+
+# Global information for all the functions
+Globals:
+  Function:
+    Runtime: nodejs12.x
+    MemorySize: 256
+    Timeout: 100
+    Tracing: Active
+
+Resources:
+
+  MyTestingFunction: 
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: myTestingFunction.handler
+      CodeUri: .
+
+Outputs:
+  Region:
+    Description: "Region"
+    Value: !Ref AWS::Region
+
+  Function:
+    Description: "Function ARN"
+    Value: !GetAtt MyTestingFunction.Arn
