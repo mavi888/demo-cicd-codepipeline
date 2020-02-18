@@ -59,7 +59,7 @@ phases:
 artifacts:
   files:
     # list of local files relative to this build environment that will be added to the final artifact (zip)
-    - packaged.yml
+    - simpleApp/packaged.yml
   discard-paths: yes
 
 #########################################
