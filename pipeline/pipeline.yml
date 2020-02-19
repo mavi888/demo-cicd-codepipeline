@@ -160,6 +160,10 @@ Resources:
                         ChangeSetName: demo-cicd-codepipeline-ChangeSet-Stage
                         TemplatePath: BuildArtifactAsZip::packaged.yml
                         Capabilities: CAPABILITY_IAM
+                        ParameterOverrides: |
+                          {
+                            "MyEnvironment" : "staging"
+                          }
                       InputArtifacts:
                         - Name: BuildArtifactAsZip
                       RunOrder: 1
@@ -211,6 +215,10 @@ Resources:
                         ChangeSetName: demo-cicd-codepipeline-ChangeSet-Prod
                         TemplatePath: BuildArtifactAsZip::packaged.yml
                         Capabilities: CAPABILITY_IAM
+                        ParameterOverrides: |
+                          {
+                            "MyEnvironment" : "prod"
+                          }
                       InputArtifacts:
                         - Name: BuildArtifactAsZip
                       RunOrder: 2

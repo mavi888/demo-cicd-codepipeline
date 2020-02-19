@@ -45,6 +45,12 @@ Resources:
       Handler: mySimpleFunction.handler
       Runtime: nodejs12.x
       CodeUri: ./functions
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref MyDynamoDBTable
+      Environment:
+        Variables:
+          TABLE_NAME: !Ref MyDynamoDBTable    
       Events:
         MySimpleFunctionAPI:
           Type: Api
@@ -52,6 +58,18 @@ Resources:
             RestApiId: !Ref MyApi
             Path: /simple
             Method: GET
+
+  MyDynamoDBTable:
+    Type: "AWS::DynamoDB::Table"
+    Properties:
+      AttributeDefinitions:
+      - AttributeName: "itemId"
+        AttributeType: "S"
+      KeySchema:
+      - AttributeName: "itemId"
+        KeyType: "HASH"
+      BillingMode: PAY_PER_REQUEST
+      TableName: !FindInMap [ResourcesName, !Ref MyEnvironment, tableName] 
 
 Outputs:
   Region:
