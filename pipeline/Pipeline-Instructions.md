@@ -14,24 +14,24 @@
 
 This Pipeline is configured to look up for GitHub information stored on [EC2 System Manager Parameter Store](https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-paramstore.html) such as Branch, Repo, Username and OAuth Token.
 
-Replace the placeholders with values corresponding to your GitHub Repo and Token:
+Replace the placeholders with values corresponding to your GitHub Repo, Token and User (case sensitive!) :
 
 ```bash
 aws ssm put-parameter \
-    --name "/service/aws-test-pipepelines-pipeline/github/repo" \
-    --description "Github Repository name for Cloudformation Stack aws-test-pipepelines-pipeline-pipeline" \
+    --name "/service/demo-cicd-pipeline/github/repo" \
+    --description "Github Repository name for Cloudformation Stack demo-cicd-pipeline" \
     --type "String" \
     --value "GITHUB_REPO_NAME"
 
 aws ssm put-parameter \
-    --name "/service/aws-test-pipepelines-pipeline/github/token" \
-    --description "Github Token for Cloudformation Stack aws-test-pipepelines-pipeline-pipeline" \
+    --name "/service/demo-cicd-pipeline/github/token" \
+    --description "Github Token for Cloudformation Stack demo-cicd-pipeline" \
     --type "String" \
     --value "TOKEN"
 
 aws ssm put-parameter \
-    --name "/service/aws-test-pipepelines-pipeline/github/user" \
-    --description "Github Username for Cloudformation Stack aws-test-pipepelines-pipeline-pipeline" \
+    --name "/service/demo-cicd-pipeline/github/user" \
+    --description "Github Username for Cloudformation Stack demo-cicd-pipeline" \
     --type "String" \
     --value "GITHUB_USER"
 ```
@@ -90,8 +90,8 @@ Run the following AWS CLI command to create your first pipeline for your SAM bas
 
 ```bash
 aws cloudformation create-stack \
-    --stack-name aws-test-pipepelines-pipeline-pipeline \
-    --template-body file://pipeline.yaml \
+    --stack-name demo-cicd-pipeline \
+    --template-body file://pipeline.yml \
     --capabilities CAPABILITY_NAMED_IAM
 ```
 
@@ -99,7 +99,7 @@ This may take a couple of minutes to complete, therefore give it a minute or two
 
 ```bash
 aws cloudformation describe-stacks \
-    --stack-name aws-test-pipepelines-pipeline-pipeline \
+    --stack-name demo-cicd-pipeline \
     --query 'Stacks[].Outputs'
 ```
 

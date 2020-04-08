@@ -188,10 +188,10 @@ Resources:
                         Provider: Lambda
                         Version: "1"
                       Configuration:
-                        FunctionName: testingApp-MyTestingFunction-3UH80R91MAYE 
+                        FunctionName: testingApp-MyTestingFunction-PD00GW15STTD
                       OutputArtifacts: []
                       InputArtifacts: []
-                      Region: us-east-1
+                      Region: eu-west-1
                       RunOrder: 3
                 - Name: Prod
                   Actions:
