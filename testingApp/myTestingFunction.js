@@ -10,7 +10,8 @@ exports.handler = async (event, context)  => {
 	// Retrieve the Job ID from the Lambda action
 	let jobId = event["CodePipeline.job"].id;
 
-	// DO SOME INTEGRATION TESTS
+	// DO SOME INTEGRATION TESTS AND RETURN RESULTS VIA TESTSPASSED
+	let testsPassed = true
 
 	if (testsPassed) {
 		let params = {
