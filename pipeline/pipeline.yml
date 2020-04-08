@@ -191,7 +191,7 @@ Resources:
                         FunctionName: testingApp-MyTestingFunction-PD00GW15STTD
                       OutputArtifacts: []
                       InputArtifacts: []
-                      Region: eu-west-1
+                      Region: us-east-1
                       RunOrder: 3
                 - Name: Prod
                   Actions:
