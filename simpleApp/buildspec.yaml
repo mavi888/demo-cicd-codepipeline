@@ -18,7 +18,7 @@ phases:
     commands:
       - echo "Install phase"
       - pip install --upgrade pip
-      - pip install pipenv –user
+      - pip install pipenv
       - pipenv install awscli aws-sam-cli
       - node -v
       - npm -v
