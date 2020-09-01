@@ -1,12 +1,12 @@
-AWSTemplateFormatVersion: '2010-09-09'
-Transform: 'AWS::Serverless-2016-10-31'
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: "AWS::Serverless-2016-10-31"
 
 # Parameters definitions
-Parameters: 
-  MyEnvironment: 
+Parameters:
+  MyEnvironment:
     Type: String
     Default: dev
-    AllowedValues: 
+    AllowedValues:
       - dev
       - staging
       - prod
@@ -28,9 +28,9 @@ Globals:
     MemorySize: 256
     Timeout: 100
     Tracing: Active
+    CodeUri: ./functions
 
 Resources:
-
   # Basic definitions for my API Gateway
   MyApi:
     Type: AWS::Serverless::Api
@@ -39,18 +39,16 @@ Resources:
       TracingEnabled: true
 
   # A function with the most commont attributes
-  MySimpleFunction: 
-    Type: 'AWS::Serverless::Function'
+  MySimpleFunction:
+    Type: "AWS::Serverless::Function"
     Properties:
       Handler: mySimpleFunction.handler
-      Runtime: nodejs12.x
-      CodeUri: ./functions
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref MyDynamoDBTable
       Environment:
         Variables:
-          TABLE_NAME: !Ref MyDynamoDBTable    
+          TABLE_NAME: !Ref MyDynamoDBTable
       Events:
         MySimpleFunctionAPI:
           Type: Api
@@ -59,17 +57,25 @@ Resources:
             Path: /simple
             Method: GET
 
+    MySafeDeployedFunction:
+      Type: "AWS::Serverless::Function"
+      Properties:
+        Handler: mySafeDeployedFunction.handler
+        AutoPublishAlias: live
+        DeploymentPreference:
+          Type: AllAtOnce
+
   MyDynamoDBTable:
     Type: "AWS::DynamoDB::Table"
     Properties:
       AttributeDefinitions:
-      - AttributeName: "itemId"
-        AttributeType: "S"
+        - AttributeName: "itemId"
+          AttributeType: "S"
       KeySchema:
-      - AttributeName: "itemId"
-        KeyType: "HASH"
+        - AttributeName: "itemId"
+          KeyType: "HASH"
       BillingMode: PAY_PER_REQUEST
-      TableName: !FindInMap [ResourcesName, !Ref MyEnvironment, tableName] 
+      TableName: !FindInMap [ResourcesName, !Ref MyEnvironment, tableName]
 
 Outputs:
   Region:
@@ -82,4 +88,4 @@ Outputs:
 
   ApiUrl:
     Description: "API endpoint URL for Prod environment"
-    Value: !Sub 'https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/dev/'
+    Value: !Sub "https://${MyApi}.execute-api.${AWS::Region}.amazonaws.com/dev/"
