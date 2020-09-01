@@ -57,13 +57,13 @@ Resources:
             Path: /simple
             Method: GET
 
-    MySafeDeployedFunction:
-      Type: "AWS::Serverless::Function"
-      Properties:
-        Handler: mySafeDeployedFunction.handler
-        AutoPublishAlias: live
-        DeploymentPreference:
-          Type: AllAtOnce
+  MySafeDeployedFunction:
+    Type: "AWS::Serverless::Function"
+    Properties:
+      Handler: mySafeDeployedFunction.handler
+      AutoPublishAlias: live
+      DeploymentPreference:
+        Type: AllAtOnce
 
   MyDynamoDBTable:
     Type: "AWS::DynamoDB::Table"
