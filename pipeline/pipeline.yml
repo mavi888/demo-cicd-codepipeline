@@ -29,6 +29,11 @@ Parameters:
     Type: AWS::SSM::Parameter::Value<String>
     Default: /service/demo-cicd-pipeline/github/user
 
+  IntegrationTestLambda:
+    Description: Name of the lambda function that will be used for running integration tests
+    Type: AWS::SSM::Parameter::Value<String>
+    Default: /service/demo-cicd-pipeline/lambda/name
+
 Resources:
   ######   #######  ##     ## ########   ######  ########
   ##    ## ##     ## ##     ## ##     ## ##    ## ##
@@ -173,18 +178,18 @@ Resources:
               OutputArtifacts:
                 - Name: demo-cicd-codepipelineStageChangeSet
               RunOrder: 2
-        #    - Name: LamdbaRunTests #https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-Lambda.html
-        #      ActionTypeId:
-        #        Category: Invoke
-        #        Owner: AWS
-        #        Provider: Lambda
-        #        Version: "1"
-        #      Configuration:
-        #        FunctionName: testingApp-MyTestingFunction-3UH80R91MAYE
-        #      OutputArtifacts: []
-        #      InputArtifacts: []
-        #      Region: us-east-1
-        #      RunOrder: 3
+            - Name: LamdbaRunTests #https://docs.aws.amazon.com/codepipeline/latest/userguide/action-reference-Lambda.html
+              ActionTypeId:
+                Category: Invoke
+                Owner: AWS
+                Provider: Lambda
+                Version: "1"
+              Configuration:
+                FunctionName: !Ref IntegrationTestLambda # integration-test-lambda-HelloWorldFunction-7B8Z9SLEFTQU
+              OutputArtifacts: []
+              InputArtifacts: []
+              Region: us-east-1
+              RunOrder: 3
         - Name: Prod
           Actions:
             - Name: DeploymentApproval
