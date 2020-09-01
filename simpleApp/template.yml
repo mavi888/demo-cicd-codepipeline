@@ -21,6 +21,9 @@ Mappings:
     prod:
       tableName: MyDynamoDBTable-prod
 
+Conditions:
+  IsProd: !Equals [!Ref MyEnvironment, prod]
+
 # Global information for all the functions
 Globals:
   Function:
@@ -63,7 +66,7 @@ Resources:
       Handler: mySafeDeployedFunction.handler
       AutoPublishAlias: live
       DeploymentPreference:
-        Type: AllAtOnce
+        Type: !If [IsProd, Linear10PercentEvery1Minute, AllAtOnce]
 
   MyDynamoDBTable:
     Type: "AWS::DynamoDB::Table"
