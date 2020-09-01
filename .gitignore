@@ -4,3 +4,4 @@ simpleApp/node_modules/
 simpleApp/.aws-sam/build/
 simpleApp/samconfig.toml
 testingApp/samconfig.toml
+integration-test-lambda/samconfig.toml

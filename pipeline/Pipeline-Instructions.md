@@ -2,13 +2,11 @@
 
 **This is an example of how to create a minimal pipeline for SAM based Serverless Apps**
 
-![Pipeline Sample Image](pipeline-sample.png)
-
 ## Requirements
 
-* AWS CLI already configured with Administrator access 
-    - Alternatively, you can use a [Cloudformation Service Role with Admin access](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-servicerole.html)
-* [Github Personal Token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) with full permissions on **admin:repo_hook and repo**
+- AWS CLI already configured with Administrator access
+  - Alternatively, you can use a [Cloudformation Service Role with Admin access](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-iam-servicerole.html)
+- [Github Personal Token](https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/) with full permissions on **admin:repo_hook and repo**
 
 ## Configuring GitHub Integration
 
@@ -18,52 +16,57 @@ Replace the placeholders with values corresponding to your GitHub Repo and Token
 
 ```bash
 aws ssm put-parameter \
-    --name "/service/aws-test-pipepelines-pipeline/github/repo" \
-    --description "Github Repository name for Cloudformation Stack aws-test-pipepelines-pipeline-pipeline" \
+    --name "/service/demo-cicd-pipeline/github/repo" \
+    --description "Github Repository name for Cloudformation Stack demo-cicd-pipeline" \
     --type "String" \
     --value "GITHUB_REPO_NAME"
 
 aws ssm put-parameter \
-    --name "/service/aws-test-pipepelines-pipeline/github/token" \
-    --description "Github Token for Cloudformation Stack aws-test-pipepelines-pipeline-pipeline" \
+    --name " /service/demo-cicd-pipeline/github/token" \
+    --description "Github Token for Cloudformation Stack demo-cicd-pipeline" \
     --type "String" \
     --value "TOKEN"
 
 aws ssm put-parameter \
-    --name "/service/aws-test-pipepelines-pipeline/github/user" \
-    --description "Github Username for Cloudformation Stack aws-test-pipepelines-pipeline-pipeline" \
+    --name "/service/demo-cicd-pipeline/github/user" \
+    --description "Github Username for Cloudformation Stack demo-cicd-pipeline" \
     --type "String" \
     --value "GITHUB_USER"
+
+aws ssm put-parameter \
+    --name "/service/demo-cicd-pipeline/lambda/name" \
+    --description "Name of the Lambda functions that will be used to run tesets on the demo-cicd-pipeline" \
+    --type "String" \
+    --value "LAMBDANAME"
 ```
 
 **NOTE:** Keep in mind that these Parameters will only be available within the same region you're deploying this Pipeline stack. Also, if these values ever change you will need to [update these parameters](https://docs.aws.amazon.com/cli/latest/reference/ssm/put-parameter.html) as well as update the "aws-test-pipepelines-pipeline-pipeline" Cloudformation stack.
 
 ## Pipeline creation
 
-<details>
-<summary>If you don't use Python or don't want to trigger the Pipeline from the `master` branch click here...</summary>
-Before we create this 3-environment Pipeline through Cloudformation you may want to change a couple of things to fit your environment/runtime:
+Before we create this pipeline through Cloudformation you may want to change a couple of things to fit your environment/runtime:
 
-* **CodeBuild** uses a `Python` build image by default and if you're not using `Python` as a runtime you can change that
-    - [CodeBuild offers multiple images](https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html) and you can  update the `Image` property under `pipeline.yaml` file accordingly
+- **CodeBuild** uses a `Python` build image by default and if you're not using `Python` as a runtime you can change that
+  - [CodeBuild offers multiple images](https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html) and you can update the `Image` property under `pipeline.yaml` file accordingly
 
 ```yaml
     CodeBuildProject:
         Type: AWS::CodeBuild::Project
         Properties:
             ...
-            Environment: 
+            Environment:
                 Type: LINUX_CONTAINER
                 ComputeType: BUILD_GENERAL1_SMALL
                 Image: aws/codebuild/python:3.6.5 # More info on Images: https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-available.html
                 EnvironmentVariables:
-                  - 
+                  -
                     Name: BUILD_OUTPUT_BUCKET
                     Value: !Ref BuildArtifactsBucket
 ...
 ```
 
-* **CodePipeline** uses the `master` branch to trigger the CI/CD pipeline and if you want to specify another branch you can do so by updating the following section in the `pipeline.yaml` file.
+- **CodePipeline** uses the `master` branch to trigger the CI/CD pipeline and if you want to specify another branch you can do so by updating the following section in the `pipeline.yaml` file.
+
 ```yaml
     Stages:
         - Name: Source
@@ -84,14 +87,15 @@ Before we create this 3-environment Pipeline through Cloudformation you may want
                 - Name: SourceCodeAsZip
                 RunOrder: 1
 ```
+
 </details>
 
 Run the following AWS CLI command to create your first pipeline for your SAM based Serverless App:
 
 ```bash
 aws cloudformation create-stack \
-    --stack-name aws-test-pipepelines-pipeline-pipeline \
-    --template-body file://pipeline.yaml \
+    --stack-name demo-cicd-pipeline \
+    --template-body file://pipeline.yml \
     --capabilities CAPABILITY_NAMED_IAM
 ```
 
@@ -99,13 +103,13 @@ This may take a couple of minutes to complete, therefore give it a minute or two
 
 ```bash
 aws cloudformation describe-stacks \
-    --stack-name aws-test-pipepelines-pipeline-pipeline \
+    --stack-name demo-cicd-pipeline \
     --query 'Stacks[].Outputs'
 ```
 
 ## Release through the newly built Pipeline
 
-Although CodePipeline will orchestrate this 3-environment CI/CD pipeline we need to learn how to integrate our toolchain to fit the following sections:
+Although CodePipeline will orchestrate this CI/CD pipeline we need to learn how to integrate our toolchain to fit the following sections:
 
 > **Source code**
 
@@ -116,7 +120,8 @@ git init
 ```
 
 Next, add a new Git Origin to connect your local repository to the remote repository:
-* [Git Instructions for HTTPS access](https://help.github.com/articles/adding-a-remote/)
+
+- [Git Instructions for HTTPS access](https://help.github.com/articles/adding-a-remote/)
 
 > **Build steps**
 
@@ -129,7 +134,18 @@ Open up `buildspec.yaml` using your favourite editor and customize it to your ne
 The Pipeline will be listening for new git commits pushed to the `master` branch (unless you changed), therefore all we need to do now is to commit to master and watch our pipeline run through:
 
 ```bash
-git add . 
+git add .
 git commit -m "Kicking the tires of my first CI/CD pipeline"
 git push origin master
+```
+
+## Updating the pipeline
+
+If you want to do some changes after you have deployed the pipeline simply run this command:
+
+```bash
+aws cloudformation update-stack \
+    --stack-name demo-cicd-pipeline \
+    --template-body file://pipeline.yml \
+    --capabilities CAPABILITY_NAMED_IAM
 ```
